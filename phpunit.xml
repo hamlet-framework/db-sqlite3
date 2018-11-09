@@ -1,0 +1,7 @@
+<phpunit bootstrap="vendor/autoload.php">
+    <testsuites>
+        <testsuite name="hamlet-framework/db-sqlite3">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
