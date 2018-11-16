@@ -1,5 +1,5 @@
 {
-  "name": "hamlet/db-sqlite3",
+  "name": "hamlet-framework/db-sqlite3",
   "type": "framework",
   "description": "Hamlet Framework / DB / SQLite3",
   "keywords": ["framework"],
