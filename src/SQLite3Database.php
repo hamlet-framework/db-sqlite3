@@ -9,21 +9,19 @@ use Hamlet\Database\Procedure;
 use SQLite3;
 
 /**
- * @template-extends Database<SQLite3>
+ * @extends Database<SQLite3>
  */
 class SQLite3Database extends Database
 {
     public function __construct(string $location, int $flags = SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE, string $encryptionKey = null)
     {
-        $connector = function () use ($location, $flags, $encryptionKey): SQLite3 {
+        parent::__construct(new ConnectionPool(function () use ($location, $flags, $encryptionKey): SQLite3 {
             if ($encryptionKey) {
                 return new SQLite3($location, $flags, $encryptionKey);
             } else {
                 return new SQLite3($location, $flags);
             }
-        };
-        $pool = new ConnectionPool($connector);
-        parent::__construct($pool);
+        }));
     }
 
     public function prepare(string $query): Procedure

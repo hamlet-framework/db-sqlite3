@@ -11,16 +11,17 @@
     }
   ],
   "require": {
-    "php": "^7.2",
+    "php": "^7",
     "ext-sqlite3": "@stable",
     "psr/log": "@stable",
     "hamlet-framework/db": "dev-master"
   },
   "require-dev": {
     "phake/phake": "@stable",
-    "phpunit/phpunit": "^7",
+    "phpunit/phpunit": "^6 || ^7",
     "squizlabs/php_codesniffer": "@stable",
-    "monolog/monolog": "@stable"
+    "monolog/monolog": "@stable",
+    "vimeo/psalm": "@stable"
   },
   "autoload": {
     "psr-4": {

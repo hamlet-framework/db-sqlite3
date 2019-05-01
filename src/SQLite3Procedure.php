@@ -25,40 +25,75 @@ class SQLite3Procedure extends Procedure
         $this->query = $query;
     }
 
+    /**
+     * @return int
+     * @psalm-suppress MixedInferredReturnType
+     * @psalm-suppress MixedReturnStatement
+     */
     public function insert(): int
     {
-        return ($this->executor)(function (SQLite3 $connection) {
+        $procedure = function (SQLite3 $connection): int {
             $this->bindParameters($connection)->execute();
             return $connection->lastInsertRowID();
-        });
-    }
-
-    public function execute(): void
-    {
-        ($this->executor)(function (SQLite3 $connection) {
-            $this->bindParameters($connection)->execute();
-        });
-    }
-
-    public function affectedRows(): int
-    {
-        return ($this->executor)(function (SQLite3 $connection): int {
-            return $connection->changes();
-        });
+        };
+        return ($this->executor)($procedure);
     }
 
     /**
-     * @return Generator<int,array<string,int|string|float|null>>
+     * @return void
+     */
+    public function execute()
+    {
+        $procedure =
+            /**
+             * @param SQLite3 $connection
+             * @return void
+             */
+            function (SQLite3 $connection) {
+                $this->bindParameters($connection)->execute();
+            };
+
+        ($this->executor)($procedure);
+    }
+
+    /**
+     * @return int
+     * @psalm-suppress MixedInferredReturnType
+     * @psalm-suppress MixedReturnStatement
+     */
+    public function affectedRows(): int
+    {
+        $procedure = function (SQLite3 $connection): int {
+            return $connection->changes();
+        };
+
+        return ($this->executor)($procedure);
+    }
+
+    /**
+     * @return Generator
+     * @psalm-return Generator<int,array<string,int|string|float|null>,mixed,void>
+     * @psalm-suppress MixedInferredReturnType
+     * @psalm-suppress MixedReturnStatement
      */
     protected function fetch(): Generator
     {
-        return ($this->executor)(function (SQLite3 $connection) {
-            $result = $this->bindParameters($connection)->execute();
-            $index = 0;
-            while (($row = $result->fetchArray(SQLITE3_ASSOC)) !== false) {
-                yield $index++ => $row;
-            }
-        });
+        $procedure =
+            /**
+             * @param SQLite3 $connection
+             * @return Generator
+             * @psalm-return Generator<int,array<string,int|string|float|null>,mixed,void>
+             * @psalm-suppress MixedReturnTypeCoercion
+             */
+            function (SQLite3 $connection) {
+                $result = $this->bindParameters($connection)->execute();
+                $index = 0;
+                while (($row = $result->fetchArray(SQLITE3_ASSOC)) !== false) {
+                    yield $index++ => $row;
+                }
+            };
+
+        return ($this->executor)($procedure);
     }
 
     private function bindParameters(SQLite3 $connection): SQLite3Stmt
