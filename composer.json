@@ -2,7 +2,7 @@
   "name": "hamlet-framework/db-sqlite3",
   "type": "framework",
   "description": "Hamlet Framework / DB / SQLite3",
-  "keywords": ["framework"],
+  "keywords": ["framework", "orm", "sqlite", "sqlite3"],
   "license": "Apache-2.0",
   "authors": [
     {
@@ -17,12 +17,12 @@
     "hamlet-framework/db": "dev-master"
   },
   "require-dev": {
+    "jakub-onderka/php-parallel-lint": "@stable",
+    "monolog/monolog": "@stable",
     "phake/phake": "@stable",
     "phpunit/phpunit": "^6 || ^7",
     "squizlabs/php_codesniffer": "@stable",
-    "monolog/monolog": "@stable",
-    "vimeo/psalm": "@stable",
-    "jakub-onderka/php-parallel-lint": "@stable"
+    "vimeo/psalm": "@stable"
   },
   "autoload": {
     "psr-4": {

@@ -2,10 +2,10 @@
 
 namespace Hamlet\Database\SQLite3;
 
-use Hamlet\Database\ConnectionPool;
 use Hamlet\Database\Database;
 use Hamlet\Database\DatabaseException;
 use Hamlet\Database\Procedure;
+use Hamlet\Database\SimpleConnectionPool;
 use SQLite3;
 
 /**
@@ -15,7 +15,7 @@ class SQLite3Database extends Database
 {
     public function __construct(string $location, int $flags = SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE, string $encryptionKey = null)
     {
-        parent::__construct(new ConnectionPool(function () use ($location, $flags, $encryptionKey): SQLite3 {
+        parent::__construct(new SimpleConnectionPool(function () use ($location, $flags, $encryptionKey): SQLite3 {
             if ($encryptionKey) {
                 return new SQLite3($location, $flags, $encryptionKey);
             } else {
