@@ -4,6 +4,7 @@ namespace Hamlet\Database\SQLite3;
 
 use Hamlet\Database\Database;
 use Hamlet\Database\Procedure;
+use Hamlet\Database\Session;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 
@@ -18,38 +19,40 @@ class SQLite3DatabaseTest extends TestCase
     public function setUp()
     {
         $this->database = new SQLite3Database(tempnam(sys_get_temp_dir(), '.sqlite'));
-        $this->database->prepare('
-            CREATE TABLE users (
-              id INTEGER PRIMARY KEY,
-              name VARCHAR(255)
-            )
-        ')->execute();
-        $this->database->prepare('
-            CREATE TABLE addresses (
-              user_id INTEGER,
-              address VARCHAR(255)
-            ) 
-        ')->execute();
+        $this->database->withSession(function (Session $session) {
+            $session->prepare('
+                CREATE TABLE users (
+                  id INTEGER PRIMARY KEY,
+                  name VARCHAR(255)
+                )
+            ')->execute();
+            $session->prepare('
+                CREATE TABLE addresses (
+                  user_id INTEGER,
+                  address VARCHAR(255)
+                ) 
+            ')->execute();
 
-        $procedure = $this->database->prepare("INSERT INTO users (name) VALUES ('Vladimir')");
-        $userId = $procedure->insert();
+            $procedure = $session->prepare("INSERT INTO users (name) VALUES ('Vladimir')");
+            $userId = $procedure->insert();
 
-        $procedure = $this->database->prepare("INSERT INTO addresses (user_id, address) VALUES (?, 'Moskva')");
-        $procedure->bindInteger($userId);
-        $procedure->execute();
+            $procedure = $session->prepare("INSERT INTO addresses (user_id, address) VALUES (?, 'Moskva')");
+            $procedure->bindInteger($userId);
+            $procedure->execute();
 
-        $procedure = $this->database->prepare("INSERT INTO addresses (user_id, address) VALUES (?, 'Vladivostok')");
-        $procedure->bindInteger($userId);
-        $procedure->execute();
+            $procedure = $session->prepare("INSERT INTO addresses (user_id, address) VALUES (?, 'Vladivostok')");
+            $procedure->bindInteger($userId);
+            $procedure->execute();
 
-        $this->procedure = $this->database->prepare('
-            SELECT users.id,
-                   name,
-                   address
-              FROM users 
-                   JOIN addresses
-                     ON users.id = addresses.user_id      
-        ');
+            $this->procedure = $session->prepare('
+                SELECT users.id,
+                       name,
+                       address
+                  FROM users 
+                       JOIN addresses
+                         ON users.id = addresses.user_id      
+            ');
+        });
     }
 
     public function testProcessOne()
@@ -104,7 +107,9 @@ class SQLite3DatabaseTest extends TestCase
 
     public function testInsert()
     {
-        $procedure = $this->database->prepare("INSERT INTO users (name) VALUES ('Anatoly')");
-        Assert::assertEquals(2, $procedure->insert());
+        $this->database->withSession(function (Session $session) {
+            $procedure = $session->prepare("INSERT INTO users (name) VALUES ('Anatoly')");
+            Assert::assertEquals(2, $procedure->insert());
+        });
     }
 }

@@ -4,7 +4,7 @@ namespace Hamlet\Database\SQLite3;
 
 use Hamlet\Database\Database;
 use Hamlet\Database\DatabaseException;
-use Hamlet\Database\Procedure;
+use Hamlet\Database\Session;
 use Hamlet\Database\SimpleConnectionPool;
 use SQLite3;
 
@@ -24,50 +24,11 @@ class SQLite3Database extends Database
         }));
     }
 
-    public function prepare(string $query): Procedure
+    protected function createSession($handle): Session
     {
-        $procedure = new SQLite3Procedure($this->executor(), $query);
-        $procedure->setLogger($this->logger);
-        return $procedure;
-    }
-
-    /**
-     * @param SQLite3 $connection
-     * @return void
-     */
-    protected function startTransaction($connection)
-    {
-        $this->logger->debug('Starting transaction');
-        $success = $connection->exec('BEGIN TRANSACTION');
-        if (!$success) {
-            throw self::exception($connection);
-        }
-    }
-
-    /**
-     * @param SQLite3 $connection
-     * @return void
-     */
-    protected function commit($connection)
-    {
-        $this->logger->debug('Committing transaction');
-        $success = $connection->exec('COMMIT');
-        if (!$success) {
-            throw self::exception($connection);
-        }
-    }
-
-    /**
-     * @param SQLite3 $connection
-     * @return void
-     */
-    protected function rollback($connection)
-    {
-        $this->logger->debug('Rolling back transaction');
-        $success = $connection->exec('ROLLBACK');
-        if (!$success) {
-            throw self::exception($connection);
-        }
+        $session = new SQLite3Session($handle);
+        $session->setLogger($this->logger);
+        return $session;
     }
 
     public static function exception(SQLite3 $connection): DatabaseException
