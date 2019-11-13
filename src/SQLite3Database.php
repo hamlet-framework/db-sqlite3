@@ -24,6 +24,11 @@ class SQLite3Database extends Database
         }));
     }
 
+    /**
+     * @param SQLite3 $handle
+     * @return Session
+     * @psalm-suppress LessSpecificImplementedReturnType
+     */
     protected function createSession($handle): Session
     {
         $session = new SQLite3Session($handle);
