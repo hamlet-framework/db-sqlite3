@@ -16,7 +16,10 @@ class SQLite3DatabaseTest extends TestCase
     /** @var Procedure */
     private $procedure;
 
-    public function setUp()
+    /**
+     * @before
+     */
+    public function setUp_()
     {
         $this->database = new SQLite3Database(tempnam(sys_get_temp_dir(), '.sqlite'));
         $this->database->withSession(function (Session $session) {
