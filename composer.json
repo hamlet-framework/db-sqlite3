@@ -10,12 +10,11 @@
       "email": "info@kartashov.com"
     }
   ],
-  "minimum-stability": "dev",
   "require": {
     "php": "^7 || ^8",
     "ext-sqlite3": "@stable",
     "psr/log": "@stable",
-    "hamlet-framework/db": "dev-master"
+    "hamlet-framework/db": "@stable"
   },
   "require-dev": {
     "php-parallel-lint/php-parallel-lint": "@stable",
